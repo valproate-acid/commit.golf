@@ -11,7 +11,7 @@ open TwoPermutationPrototype.QuadCertificate (CheckerFacts)
 set_option autoImplicit false
 
 theorem penta_nonce_opening_facts (s : Submission) (abi : QuadOpening.OpeningABI s)
-    (commit : PentaNonceCommitTranscript s) : OpeningFacts s 74639 182272 where
+    (commit : PentaNonceCommitTranscript s) : OpeningFacts s 73103 182272 where
   runs trapdoor positions := by
     obtain ⟨result, run, physical⟩ := QuadOpening.opening_physical s abi trapdoor positions
     have successful := QuadOpening.opening_success s abi trapdoor positions result physical
@@ -27,7 +27,7 @@ theorem penta_nonce_certificate (s : Submission) (admitted : s.Admission) (abi :
     (resources : ∀ (message : Message) (result : Execution), result ∈ support (s.run .commit message) →
       result.exit = .success ∧ result.cycles = commitCycles ∧ result.oracleCalls ≤ COMMIT_BUDGET)
     (checks : CheckerFacts s) :
-    Certificate s 182272 commitCycles 74639 :=
+    Certificate s 182272 commitCycles 73103 :=
   let opens := penta_nonce_opening_facts s abi commit
   certificate_of_facts resources admitted opens checks
     (penta_nonce_hiding s.scheme opens.refines)

@@ -12,7 +12,7 @@ attribute [local simp] QOpening.getReg_setReg MachineState.getReg_setPC
 
 /-- State at a record boundary: about to start record `o` (or at the exit when `o = card`). -/
 structure RecordAt (init state : MachineState) (positions : Positions) (o : Nat) : Prop where
-  pc : state.pc = BitVec.ofNat 64 (4096+4*(if o = positions.card then 154 else 11))
+  pc : state.pc = BitVec.ofNat 64 (4096+4*(if o = positions.card then 148 else 11))
   index : state.getReg .x8 = BitVec.ofNat 64 (indicesBase+8*o)
   heap : state.getReg .x9 = BitVec.ofNat 64 trapdoorBase
   left : state.getReg .x18 = BitVec.ofNat 64 (positions.card-o)
@@ -42,8 +42,8 @@ theorem ordinal_index_lt (positions : Positions) (o : Nat) : ordinalIndex positi
 set_option maxRecDepth 100000 in
 theorem record_codes :
     CodeAt 11 [.LD .x6 .x8 0] ∧ CodeAt 12 [.SLLI .x7 .x6 4, .ADD .x7 .x22 .x7] ∧ CodeAt 14 (pairCode 2) ∧
-    CodeAt 18 [.ADDI .x21 .x21 16] ∧ CodeAt 151 [.ADDI .x8 .x8 8, .ADDI .x18 .x18 4095] ∧
-    program[153]? = some (.BNE .x18 .x0 7624) := by
+    CodeAt 18 [.ADDI .x21 .x21 16] ∧ CodeAt 145 [.ADDI .x8 .x8 8, .ADDI .x18 .x18 4095] ∧
+    program[147]? = some (.BNE .x18 .x0 7648) := by
   decide +kernel
 
 theorem set_pc_pc (state : MachineState) (pc : Word) : (state.setPC pc).pc = pc := rfl
@@ -74,12 +74,12 @@ def recordRun (state : MachineState) : MachineState :=
     (levelsRun 11 (([.ADDI .x21 .x21 16] : List Instr).foldl execInstrBr ((pairCode 2).foldl execInstrBr
       (([.SLLI .x7 .x6 4, .ADD .x7 .x22 .x7] : List Instr).foldl execInstrBr
         (execInstrBr state (.LD .x6 .x8 0)))))))
-    (.BNE .x18 .x0 7624)
+    (.BNE .x18 .x0 7648)
 
 theorem record_step (s : Submission) (layout : OpeningLayout s) (trapdoor : BitVec (8*s.sizes.trapdoor))
     (positions : Positions) (state : MachineState) (o : Nat) (present : o < positions.card)
     (at_ : RecordAt (s.initialState .opening (trapdoor, positions)) state positions o) :
-    Runs state (recordRun state) 517 583 ∧
+    Runs state (recordRun state) 511 571 ∧
       RecordAt (s.initialState .opening (trapdoor, positions)) (recordRun state) positions (o+1) := by
   let init := s.initialState .opening (trapdoor, positions)
   let i := ordinalIndex positions o
@@ -184,7 +184,7 @@ theorem record_step (s : Submission) (layout : OpeningLayout s) (trapdoor : BitV
     (regs₄ r z a b c d e f g h l).trans (keep₃ r a b e l)
   -- loop latch
   have pure₅ : ([.ADDI .x8 .x8 8, .ADDI .x18 .x18 4095] : List Instr).all pureOp = true := rfl
-  have run₅ := runs_pure _ 151 s₄ c₅ level₁₁.pc pure₅
+  have run₅ := runs_pure _ 145 s₄ c₅ level₁₁.pc pure₅
   let s₅ := ([.ADDI .x8 .x8 8, .ADDI .x18 .x18 4095] : List Instr).foldl execInstrBr s₄
   have keep₅ (r : Reg) (z : r ≠ .x1) (a : r ≠ .x6) (b : r ≠ .x7) (c : r ≠ .x10) (d : r ≠ .x11) (e : r ≠ .x21)
       (f : r ≠ .x24) (g : r ≠ .x25) (h : r ≠ .x30) (l : r ≠ .x31) (m : r ≠ .x8) (n : r ≠ .x18) :
@@ -196,15 +196,15 @@ theorem record_step (s : Submission) (layout : OpeningLayout s) (trapdoor : BitV
     rw [h, keep₄ .x18 (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide) (by decide)
       (by decide) (by decide), at_.left, decrement _ (by omega) (by omega)]
     congr 1
-  have pc₅ : s₅.pc = BitVec.ofNat 64 (4096+4*153) := by
+  have pc₅ : s₅.pc = BitVec.ofNat 64 (4096+4*147) := by
     rw [pure_pc _ _ pure₅, level₁₁.pc, pc_offset]; rfl
-  have branchStep : ordinaryStep s₅ (.base (.BNE .x18 .x0 7624)) = some (execInstrBr s₅ (.BNE .x18 .x0 7624)) := rfl
+  have branchStep : ordinaryStep s₅ (.base (.BNE .x18 .x0 7648)) = some (execInstrBr s₅ (.BNE .x18 .x0 7648)) := rfl
   have run₆ : Runs s₅ (recordRun state) 1 1 := by
     intro fuel coins
-    rw [Nat.add_comm 1 fuel, execute_ordinary_step _ _ _ _ _ _ (fetch_program s₅ 153 _ c₆ pc₅) branchStep]
+    rw [Nat.add_comm 1 fuel, execute_ordinary_step _ _ _ _ _ _ (fetch_program s₅ 147 _ c₆ pc₅) branchStep]
     rfl
   have shape : recordRun state = s₅.setPC
-      (if s₅.getReg .x18 != s₅.getReg .x0 then s₅.pc + signExtend13 7624 else s₅.pc + 4) := bne_shape _ _ _ _
+      (if s₅.getReg .x18 != s₅.getReg .x0 then s₅.pc + signExtend13 7648 else s₅.pc + 4) := bne_shape _ _ _ _
   have keep (r : Reg) (z : r ≠ .x1) (a : r ≠ .x6) (b : r ≠ .x7) (c : r ≠ .x10) (d : r ≠ .x11) (e : r ≠ .x21)
       (f : r ≠ .x24) (g : r ≠ .x25) (h : r ≠ .x30) (l : r ≠ .x31) (m : r ≠ .x8) (n : r ≠ .x18) :
       (recordRun state).getReg r = state.getReg r := by
@@ -269,7 +269,7 @@ theorem records_run (s : Submission) (layout : OpeningLayout s) (trapdoor : BitV
     (positions : Positions) (n : Nat) :
     ∀ o (state : MachineState), o+n = positions.card →
       RecordAt (s.initialState .opening (trapdoor, positions)) state positions o →
-      Runs state (recordsRun n state) (517*n) (583*n) ∧
+      Runs state (recordsRun n state) (511*n) (571*n) ∧
         RecordAt (s.initialState .opening (trapdoor, positions)) (recordsRun n state) positions positions.card := by
   induction n with
   | zero =>

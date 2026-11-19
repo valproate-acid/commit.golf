@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-11-19T06:45:41.985174+00:00",
+  "submissionId": "f5ae28bd-8f22-4693-9071-c777c40e2419",
+  "evaluatedCommitSha": "966f29e9b709833d23f67ffc27a4124b7a672628",
+  "sourceComparison": {
+    "files": 618,
+    "byteForByteMatch": true
+  },
+  "command": "python3 verifier/check_submission.py submission-pareto",
+  "result": {
+    "artifactDigest": "e55e674ebd04e15a8c42e17126e582321ec630e1368e79044ac4afd7a752c4b1",
+    "bytes": 9153468,
+    "claim": {
+      "commitCycles": 477082487,
+      "openingCycles": 73103,
+      "proofBytes": 182272
+    },
+    "errors": [],
+    "files": 619,
+    "ok": true,
+    "score": 86972103700480
+  },
+  "fullVerifierRerun": false
+}

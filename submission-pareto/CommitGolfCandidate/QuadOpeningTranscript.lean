@@ -19,12 +19,12 @@ private def firstIndices : Fin 128 ↪ Index where
     have values := congrArg Fin.val same
     exact Fin.ext (by simpa using values)
 
-/-- Every 128-position opening costs exactly 74,639 cycles and 182,272 bytes. -/
+/-- Every 128-position opening costs exactly 73,103 cycles and 182,272 bytes. -/
 theorem opening_scored_attainment (s : Submission) (abi : OpeningABI s)
     (trapdoor : BitVec (8*s.sizes.trapdoor)) :
     ∃ (positions : Positions) (result : Execution), positions.card = BATCH ∧
       s.run .opening (trapdoor, positions) = pure result ∧
-      result.cycles = 74639 ∧ (s.readProof result).length = 182272 := by
+      result.cycles = 73103 ∧ (s.readProof result).length = 182272 := by
   let positions : Positions := (Finset.univ : Finset (Fin 128)).map firstIndices
   have count : positions.card = 128 := by simp [positions]
   obtain ⟨result, run, physical⟩ := opening_physical s abi trapdoor positions

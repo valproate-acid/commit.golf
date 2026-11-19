@@ -17,7 +17,7 @@ theorem checker_facts : QuadCertificate.CheckerFacts submission := by
   rw [show submission = _ from QuadCertificate.artifact_is_quad]
   exact Quad.Checker.checker_facts _ rfl rfl rfl rfl
 
-theorem certificate : CommitGolf.Certificate submission 182272 477082487 74639 := by
+theorem certificate : CommitGolf.Certificate submission 182272 477082487 73103 := by
   have commit : PentaNonceCommitTranscript submission := by
     rw [show submission = _ from QuadCertificate.artifact_is_quad]; exact Quad.Commit.verifiedNonceTranscript QuadOpening.openingImage Quad.Checker.quadCheckImage
   have resources : ∀ (message : Message) (result : Execution), result ∈ support (submission.run .commit message) →

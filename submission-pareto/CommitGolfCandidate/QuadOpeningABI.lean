@@ -18,10 +18,10 @@ structure OpeningABI (s : Submission) extends OpeningLayout s where
 def proofLength (positions : Positions) : Nat := 1424*positions.card
 
 def scheduledSteps (positions : Positions) : Nat :=
-  if positions.card = 0 then 6 else 15+517*positions.card
+  if positions.card = 0 then 6 else 15+511*positions.card
 
 def scheduledCycles (positions : Positions) : Nat :=
-  if positions.card = 0 then 6 else 15+583*positions.card
+  if positions.card = 0 then 6 else 15+571*positions.card
 
 structure OpenPhysical (s : Submission) (trapdoor : BitVec (8*s.sizes.trapdoor))
     (positions : Positions) (result : Execution) : Prop where
@@ -40,17 +40,17 @@ theorem beq_shape (state : MachineState) (r₁ r₂ : Reg) (imm : BitVec 13) :
 
 set_option maxRecDepth 100000 in
 theorem setup_codes :
-    CodeAt 0 [.ADDI .x21 .x15 0] ∧ program[1]? = some (.BEQ .x16 .x0 612) ∧
+    CodeAt 0 [.ADDI .x21 .x15 0] ∧ program[1]? = some (.BEQ .x16 .x0 588) ∧
     CodeAt 2 [.ADDI .x8 .x13 0, .ADDI .x9 .x12 0, .ADDI .x18 .x16 0, .LUI .x22 442369, .ADD .x22 .x9 .x22,
       .ADDI .x19 .x0 5, .ADDI .x23 .x0 368, .LUI .x26 1, .ADDI .x26 .x26 636] ∧
-    CodeAt 154 [.SUB .x11 .x21 .x15, .ADDI .x5 .x0 1, .ADDI .x10 .x0 0] ∧ program[157]? = some .ECALL := by
+    CodeAt 148 [.SUB .x11 .x21 .x15, .ADDI .x5 .x0 1, .ADDI .x10 .x0 0] ∧ program[151]? = some .ECALL := by
   decide +kernel
 
 def setupHead (state : MachineState) : MachineState :=
   ([.ADDI .x21 .x15 0] : List Instr).foldl execInstrBr state
 
 def setupBranch (state : MachineState) : MachineState :=
-  execInstrBr (setupHead state) (.BEQ .x16 .x0 612)
+  execInstrBr (setupHead state) (.BEQ .x16 .x0 588)
 
 def setupRun (state : MachineState) : MachineState :=
   ([.ADDI .x8 .x13 0, .ADDI .x9 .x12 0, .ADDI .x18 .x16 0, .LUI .x22 442369, .ADD .x22 .x9 .x22,
@@ -59,16 +59,16 @@ def setupRun (state : MachineState) : MachineState :=
 def exitRun (state : MachineState) : MachineState :=
   ([.SUB .x11 .x21 .x15, .ADDI .x5 .x0 1, .ADDI .x10 .x0 0] : List Instr).foldl execInstrBr state
 
-theorem execute_exit (state : MachineState) (pc : state.pc = BitVec.ofNat 64 (4096+4*154)) (fuel : Nat)
+theorem execute_exit (state : MachineState) (pc : state.pc = BitVec.ofNat 64 (4096+4*148)) (fuel : Nat)
     (coins : Bool) :
     execute openingImage (4+fuel) state coins = pure ⟨.success, exitRun state, 4, 0⟩ := by
   obtain ⟨_, _, _, c₄, c₅⟩ := setup_codes
   have pure₀ : ([.SUB .x11 .x21 .x15, .ADDI .x5 .x0 1, .ADDI .x10 .x0 0] : List Instr).all pureOp = true := rfl
   have run : Runs state (exitRun state) 3 3 :=
-    (runs_pure _ 154 state c₄ pc pure₀).cast rfl (by simp [cost, instructionCycles])
-  have pc₃ : (exitRun state).pc = BitVec.ofNat 64 (4096+4*157) := by
+    (runs_pure _ 148 state c₄ pc pure₀).cast rfl (by simp [cost, instructionCycles])
+  have pc₃ : (exitRun state).pc = BitVec.ofNat 64 (4096+4*151) := by
     rw [exitRun, pure_pc _ _ pure₀, pc, pc_offset]; rfl
-  have halted := fetch_program (exitRun state) 157 .ECALL c₅ pc₃
+  have halted := fetch_program (exitRun state) 151 .ECALL c₅ pc₃
   have haltFlag : (exitRun state).getReg .x5 = 1 := by simp [exitRun, execInstrBr, signExtend12]
   have successFlag : (exitRun state).getReg .x10 = 0 := by simp [exitRun, execInstrBr, signExtend12]
   rw [show 4+fuel = 3+(fuel+1) by omega, run (fuel+1) coins]
@@ -106,12 +106,12 @@ theorem setup_head (state : MachineState) (pc : state.pc = BitVec.ofNat 64 4096)
 
 theorem setup_branch (state : MachineState) (pc : (setupHead state).pc = BitVec.ofNat 64 (4096+4*1)) :
     Runs (setupHead state) (setupBranch state) 1 1 ∧
-      (setupBranch state).pc = (if (setupHead state).getReg .x16 = 0#64 then BitVec.ofNat 64 (4096+4*154)
+      (setupBranch state).pc = (if (setupHead state).getReg .x16 = 0#64 then BitVec.ofNat 64 (4096+4*148)
         else BitVec.ofNat 64 (4096+4*2)) ∧
       (setupBranch state).mem = (setupHead state).mem ∧
       ∀ r, (setupBranch state).getReg r = (setupHead state).getReg r := by
   obtain ⟨_, c₂, _, _, _⟩ := setup_codes
-  have shape := beq_shape (setupHead state) .x16 .x0 612
+  have shape := beq_shape (setupHead state) .x16 .x0 588
   refine ⟨?_, ?_, ?_, ?_⟩
   · intro fuel coins
     rw [Nat.add_comm 1 fuel, execute_ordinary_step _ _ _ _ _ _ (fetch_program _ 1 _ c₂ pc) rfl]
@@ -202,7 +202,7 @@ theorem opening_physical (s : Submission) (abi : OpeningABI s)
     obtain ⟨run₂, pc₂, mem₂, keep₂⟩ := setup_branch init pc₁
     have zero : (setupHead init).getReg .x16 = 0#64 := by
       rw [keep₁ .x16 (by decide) (by decide), count, empty]
-    have pc₂' : (setupBranch init).pc = BitVec.ofNat 64 (4096+4*154) := by rw [pc₂, if_pos zero]
+    have pc₂' : (setupBranch init).pc = BitVec.ofNat 64 (4096+4*148) := by rw [pc₂, if_pos zero]
     let result : Execution := ⟨.success, exitRun (setupBranch init), 6, 0⟩
     refine ⟨result, ?_, ⟨rfl, ?_, rfl, by simp [result, scheduledCycles, empty], ?_⟩⟩
     · change execute (s.image .opening) (s.steps .opening) init true = pure result
@@ -221,11 +221,11 @@ theorem opening_physical (s : Submission) (abi : OpeningABI s)
     obtain ⟨run₂, done⟩ := records_run s abi.toOpeningLayout trapdoor positions positions.card 0
       (setupRun init) (by omega) ready
     let final := recordsRun positions.card (setupRun init)
-    have pcFinal : final.pc = BitVec.ofNat 64 (4096+4*154) := by simpa using done.pc
+    have pcFinal : final.pc = BitVec.ofNat 64 (4096+4*148) := by simpa using done.pc
     let result : Execution := ⟨.success, exitRun final, scheduledCycles positions, 0⟩
     refine ⟨result, ?_, ⟨rfl, ?_, rfl, rfl, ?_⟩⟩
     · change execute (s.image .opening) (s.steps .opening) init true = pure result
-      have steps : s.steps .opening = (11+517*positions.card)+(4+(s.steps .opening-scheduledSteps positions)) := by
+      have steps : s.steps .opening = (11+511*positions.card)+(4+(s.steps .opening-scheduledSteps positions)) := by
         simp [scheduledSteps, empty] at budget ⊢; omega
       rw [abi.image, steps, (run₁.trans run₂) _ true, execute_exit _ pcFinal]
       simp [result, Execution.charge, scheduledCycles, empty]
@@ -249,7 +249,7 @@ theorem opening_success (s : Submission) (abi : OpeningABI s)
 theorem opening_scored_limits (s : Submission) (trapdoor : BitVec (8*s.sizes.trapdoor))
     (positions : Positions) (result : Execution) (physical : OpenPhysical s trapdoor positions result)
     (count : positions.card = BATCH) :
-    result.cycles ≤ 74639 ∧ (result.state.getReg .x11).toNat ≤ 182272 := by
+    result.cycles ≤ 73103 ∧ (result.state.getReg .x11).toNat ≤ 182272 := by
   have size : positions.card = 128 := count
   rw [physical.cycles, physical.length]
   simp [scheduledCycles, proofLength, size]

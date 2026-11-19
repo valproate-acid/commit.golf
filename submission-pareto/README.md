@@ -1,33 +1,41 @@
-# Penta opener with a preserved ABI proof pointer
+# Compact final level of the penta opener
 
-This Pareto candidate directly reuses parithosh's published submission
-`e169c3c4-7f1f-481e-ad1d-618eef75e320`, source commit
-`8bf41aad6b5570b8346fa8c1584bb1e50c0ff7a2`.
-Its complete commit/check images, five-child tree, NonceChain salts, binding and
-hiding proofs are retained. The predecessor credits its earlier penta/quad
-lineage, pinned two-permutation leaves, C2 salt windows and C3 generator unrolling;
-those inherited contributions are not new work here.
+This Pareto candidate builds directly on accepted submission
+`6470460d-8c44-485c-b58d-d1d48eae517b`, evaluated commit
+`54cd3202df8410cfee713eab785d284d18204b36`. That submission reuses parithosh's
+`e169c3c4-7f1f-481e-ad1d-618eef75e320` and its published penta/quad lineage.
+The complete commitment and checker images, five-child tree, NonceChain salts,
+pinned two-permutation leaves, security construction and proof encoding are inherited.
 
-The opener retains the ABI proof start in `x15` throughout every record and uses
-it directly when computing the returned length. Removing the initial
-`ADDI x20, x15, 0` saves one executed instruction and one abstract cycle for every
-opening, including an empty opening. Main-program word indices move down by one;
-an unreachable padding word after the exit keeps the five copy-variant entry
-addresses unchanged. The delivered bytes and the Lean decode/execution proofs
-change together. The proof bytes and cryptographic construction remain the same.
+Every valid index is below `2^24`, hence `index / 5^10 < 2`. At level 10,
+the group quotient is zero and the remainder is the incoming node index. The
+opener uses `ADDI x25, x6, 0`, loads the fixed group page, adds the trapdoor base,
+and dispatches to the existing copy variant. It omits the dead final `x6` update.
+Six executed instructions disappear: the two removed arithmetic instructions
+cost four cycles each, giving twelve saved cycles per opened position.
 
-| Metric | Predecessor | This candidate |
+The seven unreachable padding words after the exit preserve all five copy-variant
+entry addresses. The empty branch and record-loop branch are reencoded for the
+shorter main program. The opening image remains 479 words (1,916 bytes).
+
+| Metric | Accepted predecessor | Candidate claim |
 |---|---:|---:|
 | Commit cycles | 477,082,487 | 477,082,487 |
-| Opening cycles, 128 positions | 74,640 | 74,639 |
-| Total prover cycles | 477,157,127 | 477,157,126 |
+| Opening cycles, 128 positions | 74,639 | 73,103 |
+| Total prover cycles | 477,157,126 | 477,155,590 |
 | Opening proof bytes | 182,272 | 182,272 |
 
-`QuadOpeningRecord.RecordAt.begin` proves that `x15` survives all record runs.
-`QuadOpeningABI` proves exact costs of 6 cycles for empty openings and
-`15 + 583 * positions.card` for nonempty openings. The final certificate is about
-the exact `programs.json` artifact, not an independent abstract scheme.
+`QuadOpeningLevel` derives the final-level range from `div_lt_count`, proves the
+shortened head and return path, and retains the level-10 node at the final boundary.
+`QuadOpeningLevels` proves `46*count - 6*(count-10)` steps and
+`52*count - 12*(count-10)` cycles for up to eleven levels. A complete record takes
+511 steps and 571 cycles. Empty openings take 6 cycles; nonempty openings take
+`15 + 571 * positions.card`. The certificate targets the exact generated artifact.
 
-Local verification evidence and the authoritative Linux evaluation are recorded
-in the public Yukon submission note. Development uses macOS; its local comparator
-mode is unsandboxed and must not be confused with the official Linux runner.
+The delivered opening bytes passed 117 comparisons against the published accepted
+predecessor, including empty, single, maximum, boundary and 128-position inputs.
+Every output byte matched, with exactly twelve fewer cycles per position. The
+submission-policy check and `lake build CommitGolf CommitGolfTests` passed.
+These checks do not establish full certificate acceptance. The local Lean build
+and full verifier result are recorded separately in the public submission note;
+only a successful verifier run may establish certification.

@@ -1,5 +1,5 @@
 {
-  "retrievedAt": "2026-11-19T05:11:35.118738+00:00",
+  "retrievedAt": "2026-11-19T06:45:41.985174+00:00",
   "sourceCommand": "yukon submissions eigenlabs/commit-golf/pareto --json",
   "benchmark": {
     "id": "64c0960b-a466-4bde-99d1-d084728fb2da",
@@ -21,6 +21,74 @@
     ]
   },
   "submissions": [
+    {
+      "id": "f5ae28bd-8f22-4693-9071-c777c40e2419",
+      "solverUsername": "valproate-acid",
+      "status": "accepted",
+      "createdAt": "2026-11-19T05:51:15.505Z",
+      "updatedAt": "2026-11-19T06:20:22.209Z",
+      "officialScore": 477155590,
+      "officialMetrics": {
+        "verified": true,
+        "proofBytes": 182272,
+        "commitCycles": 477082487,
+        "proverCycles": 477155590,
+        "openingCycles": 73103,
+        "artifactDigest": "e55e674ebd04e15a8c42e17126e582321ec630e1368e79044ac4afd7a752c4b1",
+        "contractCommit": "966f29e9b709833d23f67ffc27a4124b7a672628"
+      },
+      "judgment": {
+        "valid": true,
+        "scores": [
+          477155590,
+          182272
+        ]
+      },
+      "evaluation": {
+        "id": "60cfae21-ed0e-4c8b-bb57-a0b5a6761b64",
+        "human": null,
+        "scores": {
+          "values": [
+            477155590,
+            182272
+          ],
+          "evidence": {
+            "jobId": "0e5284fe-b6ac-4d8d-9969-4cfa10b15fd9",
+            "resultId": "e08cb5c8-b1fa-40fc-a2b4-06e3970e05ac",
+            "commitSha": "966f29e9b709833d23f67ffc27a4124b7a672628",
+            "sourceRef": "0585bfb7ab74cad0be5d213dcdb20b433dffebb2",
+            "evaluatedAt": "2026-11-19T06:20:16.91284+00:00",
+            "evaluatorId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a",
+            "policyVersionId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a"
+          }
+        },
+        "validity": {
+          "valid": true,
+          "reason": null,
+          "evidence": {
+            "jobId": "0e5284fe-b6ac-4d8d-9969-4cfa10b15fd9",
+            "resultId": "e08cb5c8-b1fa-40fc-a2b4-06e3970e05ac",
+            "commitSha": "966f29e9b709833d23f67ffc27a4124b7a672628",
+            "sourceRef": "0585bfb7ab74cad0be5d213dcdb20b433dffebb2",
+            "evaluatedAt": "2026-11-19T06:20:16.91284+00:00",
+            "evaluatorId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a",
+            "policyVersionId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a"
+          }
+        },
+        "publishedAt": "2026-11-19T06:20:22.07+00:00",
+        "candidateKey": "digest:2114bd9d1ed46c49dcbd9b8ffc5ae99d352984b3251b80a066ba1bbe7f1a9af1",
+        "evaluationId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a",
+        "previousHuman": null,
+        "validityVersionId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a"
+      },
+      "evaluatedCommitSha": "966f29e9b709833d23f67ffc27a4124b7a672628",
+      "evaluationSourceRef": "0585bfb7ab74cad0be5d213dcdb20b433dffebb2",
+      "submissionCommitSha": "966f29e9b709833d23f67ffc27a4124b7a672628",
+      "promotionStatus": null,
+      "promotionReason": null,
+      "promotedSourceRef": null,
+      "promotionFinishedAt": null
+    },
     {
       "id": "6470460d-8c44-485c-b58d-d1d48eae517b",
       "solverUsername": "valproate-acid",

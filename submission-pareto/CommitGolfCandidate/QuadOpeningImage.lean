@@ -9,14 +9,16 @@ Registers: `x8` index pointer, `x9` trapdoor, `x18` positions left, `x19 = 5`, `
 `x25 = x6 % 5`, `x30` = trapdoor + group base `k` + 40 + 368 `x24`; `jalr x1` enters copy variant
 `x25` (word `159 + 64 x25`, `x26` holds its table base), which copies the four other children
 `x30 + 32 ((x25 + j + 1) % 5)` (`j = 0 … 3`) with 16 doubleword loads/stores at fixed offsets,
-advances `x21` by 128 and returns; then `x6 = x24`. No footer. -/
+advances `x21` by 128 and returns; then `x6 = x24`. At the final level,
+`index / 5^10 < 2`, so the head copies the remainder directly, uses the fixed group base,
+and omits the quotient update. No footer. -/
 
 namespace TwoPermutationPrototype.QuadOpening
 open CommitGolf CommitGolf.Riscv RiscvZkvm.Rv64 TwoPermutationPrototype.Sampling
 set_option maxRecDepth 8192
 
 def openingImage : Image := ⟨[
-  0x00078a93, 0x26080263, 0x00068413, 0x00060493, 0x00080913, 0x6c001b37, 0x01648b33, 0x00500993,
+  0x00078a93, 0x24080663, 0x00068413, 0x00060493, 0x00080913, 0x6c001b37, 0x01648b33, 0x00500993,
   0x17000b93, 0x00001d37, 0x27cd0d13, 0x00043303, 0x00431393, 0x007b03b3, 0x0003bf83, 0x01fab023,
   0x0083bf83, 0x01fab423, 0x010a8a93, 0x03335c33, 0x002c1c93, 0x018c8cb3, 0x41930cb3, 0x037c0533,
   0x000015b7, 0x009585b3, 0x00b50f33, 0x008c9393, 0x01a383b3, 0x000380e7, 0x000c0313, 0x03335c33,
@@ -33,9 +35,9 @@ def openingImage : Image := ⟨[
   0x01a383b3, 0x000380e7, 0x000c0313, 0x03335c33, 0x002c1c93, 0x018c8cb3, 0x41930cb3, 0x037c0533,
   0x5c00c5b7, 0x009585b3, 0x00b50f33, 0x008c9393, 0x01a383b3, 0x000380e7, 0x000c0313, 0x03335c33,
   0x002c1c93, 0x018c8cb3, 0x41930cb3, 0x037c0533, 0x5c00e5b7, 0x009585b3, 0x00b50f33, 0x008c9393,
-  0x01a383b3, 0x000380e7, 0x000c0313, 0x03335c33, 0x002c1c93, 0x018c8cb3, 0x41930cb3, 0x037c0533,
-  0x5c0105b7, 0x009585b3, 0x00b50f33, 0x008c9393, 0x01a383b3, 0x000380e7, 0x000c0313, 0x00840413,
-  0xfff90913, 0xdc0914e3, 0x40fa85b3, 0x00100293, 0x00000513, 0x00000073, 0x00000013, 0x020f3f83,
+  0x01a383b3, 0x000380e7, 0x000c0313, 0x00030c93, 0x5c0105b7, 0x00958f33, 0x008c9393, 0x01a383b3,
+  0x000380e7, 0x00840413, 0xfff90913, 0xde0910e3, 0x40fa85b3, 0x00100293, 0x00000513, 0x00000073,
+  0x00000013, 0x00000013, 0x00000013, 0x00000013, 0x00000013, 0x00000013, 0x00000013, 0x020f3f83,
   0x01fab023, 0x028f3f83, 0x01fab423, 0x030f3f83, 0x01fab823, 0x038f3f83, 0x01fabc23, 0x040f3f83,
   0x03fab023, 0x048f3f83, 0x03fab423, 0x050f3f83, 0x03fab823, 0x058f3f83, 0x03fabc23, 0x060f3f83,
   0x05fab023, 0x068f3f83, 0x05fab423, 0x070f3f83, 0x05fab823, 0x078f3f83, 0x05fabc23, 0x080f3f83,
@@ -85,7 +87,7 @@ def pairCode (n : Nat) : List Instr :=
   (List.range n).flatMap fun w => [.LD .x31 .x7 (BitVec.ofNat 12 (8*w)), .SD .x21 .x31 (BitVec.ofNat 12 (8*w))]
 
 def setupCode : List Instr :=
-  [.ADDI .x21 .x15 0, .BEQ .x16 .x0 612, .ADDI .x8 .x13 0, .ADDI .x9 .x12 0,
+  [.ADDI .x21 .x15 0, .BEQ .x16 .x0 588, .ADDI .x8 .x13 0, .ADDI .x9 .x12 0,
    .ADDI .x18 .x16 0, .LUI .x22 442369, .ADD .x22 .x9 .x22, .ADDI .x19 .x0 5, .ADDI .x23 .x0 368,
    .LUI .x26 1, .ADDI .x26 .x26 636]
 
@@ -94,16 +96,22 @@ def saltHead : List Instr := [.LD .x6 .x8 0, .SLLI .x7 .x6 4, .ADD .x7 .x22 .x7]
 def saltCode : List Instr := saltHead ++ pairCode 2 ++ [.ADDI .x21 .x21 16]
 
 def levelHead (k : Nat) : List Instr :=
-  [.DIVU .x24 .x6 .x19, .SLLI .x25 .x24 2, .ADD .x25 .x25 .x24, .SUB .x25 .x6 .x25,
+  if k = 10 then
+    [.ADDI .x25 .x6 0, .LUI .x11 (BitVec.ofNat 20 (groupPage k)), .ADD .x30 .x11 .x9]
+  else [.DIVU .x24 .x6 .x19, .SLLI .x25 .x24 2, .ADD .x25 .x25 .x24, .SUB .x25 .x6 .x25,
    .MUL .x10 .x24 .x23, .LUI .x11 (BitVec.ofNat 20 (groupPage k)), .ADD .x11 .x11 .x9,
    .ADD .x30 .x10 .x11]
 
 def dispatchCode : List Instr := [.SLLI .x7 .x25 8, .ADD .x7 .x7 .x26]
 
-def levelCode (k : Nat) : List Instr :=
-  levelHead k ++ dispatchCode ++ [.JALR .x1 .x7 0, .ADDI .x6 .x24 0]
+/-- The final level has no successor node to calculate. -/
+def finalCode (k : Nat) : List Instr :=
+  if k = 10 then [] else [.ADDI .x6 .x24 0]
 
-def tailCode : List Instr := [.ADDI .x8 .x8 8, .ADDI .x18 .x18 4095, .BNE .x18 .x0 7624]
+def levelCode (k : Nat) : List Instr :=
+  levelHead k ++ dispatchCode ++ [.JALR .x1 .x7 0] ++ finalCode k
+
+def tailCode : List Instr := [.ADDI .x8 .x8 8, .ADDI .x18 .x18 4095, .BNE .x18 .x0 7648]
 
 /-- Trapdoor-group offset of output doubleword `m < 16` in copy variant `v` (rotation by `v`). -/
 def variantOffset (v m : Nat) : Nat := 32*((v+m/4+1)%5)+8*(m%4)
@@ -119,8 +127,8 @@ def variantCode (v : Nat) : List Instr :=
 def exitCode : List Instr := [.SUB .x11 .x21 .x15, .ADDI .x5 .x0 1, .ADDI .x10 .x0 0, .ECALL]
 
 def program : List Instr :=
-  -- Preserve variant addresses with one unreachable word after the ECALL exit.
-  setupCode ++ saltCode ++ (List.range 11).flatMap levelCode ++ tailCode ++ exitCode ++ [.ADDI .x0 .x0 0] ++
+  -- Preserve variant addresses with seven unreachable words after the ECALL exit.
+  setupCode ++ saltCode ++ (List.range 11).flatMap levelCode ++ tailCode ++ exitCode ++ List.replicate 7 (.ADDI .x0 .x0 0) ++
     (List.range 5).flatMap variantCode
 
 theorem program_length : program.length = 479 := by decide
