@@ -1,0 +1,105 @@
+import CommitGolfCandidate.TwoPermutationPackedFetchBase
+
+/-! Exact 367-word checker from the 4096-leaf, position-tagged second window, 240-bit-parent manifest. -/
+namespace TwoPermutationPrototype.Packed.Checker
+open CommitGolf CommitGolf.Riscv CommitGolfCandidate RiscvZkvm.Rv64
+set_option maxRecDepth 8192
+
+def packedImage : Image := ⟨[
+  0x1f200313, 0x02680333, 0x5a68e463, 0x58080a63, 0x00068413, 0x00058493, 0x00080913, 0xfd870993,
+  0x01000a37, 0x00078a93, 0x01178b33, 0x00003bb7, 0x00003c37, 0x100c0c13, 0x00004cb7, 0x00001d37,
+  0x10000d93, 0x00003237, 0xff020213, 0x000011b7, 0xfd818193, 0x00000293, 0x00043303, 0x00831e13,
+  0x01c18e33, 0x00098513, 0x0c800593, 0x00100693, 0x000adf83, 0x01f21023, 0x002adf83, 0x01f21123,
+  0x004adf83, 0x01f21223, 0x006adf83, 0x01f21323, 0x008adf83, 0x01f21423, 0x00aadf83, 0x01f21523,
+  0x00cadf83, 0x01f21623, 0x00eadf83, 0x01f21723, 0x00850613, 0x02850513, 0x00000073, 0x03850513,
+  0x060e0f93, 0x00000013, 0x00000013, 0x01f53023, 0x00023f83, 0x01f53423, 0x00823f83, 0x01f53823,
+  0x000b8613, 0x00000073, 0x010a8a93, 0x01430333, 0x04000593, 0x00000693, 0x01000e93, 0x01000f13,
+  0x15ee8863, 0x01e00f13, 0x00137393, 0x0a038263, 0x000adf83, 0x01fc1023, 0x002adf83, 0x01fc1123,
+  0x004adf83, 0x01fc1223, 0x006adf83, 0x01fc1323, 0x008adf83, 0x01fc1423, 0x00aadf83, 0x01fc1523,
+  0x00cadf83, 0x01fc1623, 0x00eadf83, 0x01fc1723, 0x010adf83, 0x01fc1823, 0x012adf83, 0x01fc1923,
+  0x014adf83, 0x01fc1a23, 0x016adf83, 0x01fc1b23, 0x018adf83, 0x01fc1c23, 0x01aadf83, 0x01fc1d23,
+  0x01cadf83, 0x01fc1e23, 0x000c1f23, 0x000bbf83, 0x03fc3023, 0x008bbf83, 0x03fc3423, 0x010bbf83,
+  0x03fc3823, 0x018bbf83, 0x03fc3c23, 0x1f40006f, 0x000bbf83, 0x01fc3023, 0x008bbf83, 0x01fc3423,
+  0x010bbf83, 0x01fc3823, 0x018bbf83, 0x01fc3c23, 0x000adf83, 0x03fc1023, 0x002adf83, 0x03fc1123,
+  0x004adf83, 0x03fc1223, 0x006adf83, 0x03fc1323, 0x008adf83, 0x03fc1423, 0x00aadf83, 0x03fc1523,
+  0x00cadf83, 0x03fc1623, 0x00eadf83, 0x03fc1723, 0x010adf83, 0x03fc1823, 0x012adf83, 0x03fc1923,
+  0x014adf83, 0x03fc1a23, 0x016adf83, 0x03fc1b23, 0x018adf83, 0x03fc1c23, 0x01aadf83, 0x03fc1d23,
+  0x01cadf83, 0x03fc1e23, 0x020c1f23, 0x1540006f, 0x02000f13, 0x00137393, 0x0a038463, 0x000adf83,
+  0x01fc1023, 0x002adf83, 0x01fc1123, 0x004adf83, 0x01fc1223, 0x006adf83, 0x01fc1323, 0x008adf83,
+  0x01fc1423, 0x00aadf83, 0x01fc1523, 0x00cadf83, 0x01fc1623, 0x00eadf83, 0x01fc1723, 0x010adf83,
+  0x01fc1823, 0x012adf83, 0x01fc1923, 0x014adf83, 0x01fc1a23, 0x016adf83, 0x01fc1b23, 0x018adf83,
+  0x01fc1c23, 0x01aadf83, 0x01fc1d23, 0x01cadf83, 0x01fc1e23, 0x01eadf83, 0x01fc1f23, 0x000bbf83,
+  0x03fc3023, 0x008bbf83, 0x03fc3423, 0x010bbf83, 0x03fc3823, 0x018bbf83, 0x03fc3c23, 0x0a40006f,
+  0x000bbf83, 0x01fc3023, 0x008bbf83, 0x01fc3423, 0x010bbf83, 0x01fc3823, 0x018bbf83, 0x01fc3c23,
+  0x000adf83, 0x03fc1023, 0x002adf83, 0x03fc1123, 0x004adf83, 0x03fc1223, 0x006adf83, 0x03fc1323,
+  0x008adf83, 0x03fc1423, 0x00aadf83, 0x03fc1523, 0x00cadf83, 0x03fc1623, 0x00eadf83, 0x03fc1723,
+  0x010adf83, 0x03fc1823, 0x012adf83, 0x03fc1923, 0x014adf83, 0x03fc1a23, 0x016adf83, 0x03fc1b23,
+  0x018adf83, 0x03fc1c23, 0x01aadf83, 0x03fc1d23, 0x01cadf83, 0x03fc1e23, 0x01eadf83, 0x03fc1f23,
+  0x000c0513, 0x000b8613, 0x00000073, 0x000b9f23, 0x01ea8ab3, 0x00135313, 0xfffe8e93, 0xd40e90e3,
+  0x00331393, 0x007d03b3, 0x00531e13, 0x01cc8e33, 0x0003be83, 0x020e8c63, 0x000e3e83, 0x000bbf03,
+  0x1dee9863, 0x008e3e83, 0x008bbf03, 0x1dee9263, 0x010e3e83, 0x010bbf03, 0x1bee9c63, 0x018e3e83,
+  0x018bbf03, 0x1bee9663, 0x02c0006f, 0x000bbf83, 0x01fe3023, 0x008bbf83, 0x01fe3423, 0x010bbf83,
+  0x01fe3823, 0x018bbf83, 0x01fe3c23, 0x00100e93, 0x01d3b023, 0x00840413, 0x10098993, 0xfff90913,
+  0xc0091ce3, 0x0ff00313, 0x00431393, 0x007d03b3, 0x0003be03, 0x0083be83, 0x01de6e33, 0x00331393,
+  0x007d03b3, 0x01c3b023, 0xfff30313, 0xfc031ee3, 0x04000593, 0x00000693, 0x00100313, 0x00331393,
+  0x007d03b3, 0x0003be03, 0x000e0863, 0x09b37e63, 0x00131313, 0xfe9ff06f, 0x00531393, 0x007c83b3,
+  0x01ea8e13, 0x11cb6663, 0x000adf83, 0x01f39023, 0x002adf83, 0x01f39123, 0x004adf83, 0x01f39223,
+  0x006adf83, 0x01f39323, 0x008adf83, 0x01f39423, 0x00aadf83, 0x01f39523, 0x00cadf83, 0x01f39623,
+  0x00eadf83, 0x01f39723, 0x010adf83, 0x01f39823, 0x012adf83, 0x01f39923, 0x014adf83, 0x01f39a23,
+  0x016adf83, 0x01f39b23, 0x018adf83, 0x01f39c23, 0x01aadf83, 0x01f39d23, 0x01cadf83, 0x01f39e23,
+  0x00039f23, 0x01ea8a93, 0x00100393, 0x02730a63, 0x00137393, 0x02038263, 0x00135313, 0x00631513,
+  0x00ac8533, 0x00531613, 0x00cc8633, 0x00000073, 0x00061f23, 0xfd5ff06f, 0x00130313, 0xf21ff06f,
+  0x056a9863, 0x020cbe83, 0x0004bf03, 0x05ee9263, 0x028cbe83, 0x0084bf03, 0x03ee9c63, 0x030cbe83,
+  0x0104bf03, 0x03ee9663, 0x038cbe83, 0x0184bf03, 0x03ee9063, 0x00100293, 0x00000513, 0x00000073,
+  0x00089863, 0x00100293, 0x00000513, 0x00000073, 0x00100293, 0x00100513, 0x00000073
+], []⟩
+
+inductive FieldSite where
+  | nonce | rightInternal | leftInternal | rightLeaf | leftLeaf | boundary
+
+def FieldSite.start : FieldSite → Nat
+  | .nonce => 28 | .rightInternal => 68 | .leftInternal => 116
+  | .rightLeaf => 151 | .leftLeaf => 200 | .boundary => 298
+
+def FieldSite.count : FieldSite → Nat
+  | .nonce => 8 | .rightLeaf | .leftLeaf => 16 | _ => 15
+
+def FieldSite.dest : FieldSite → Reg
+  | .nonce => .x4 | .boundary => .x7 | _ => .x24
+
+def FieldSite.offset : FieldSite → Nat
+  | .leftInternal | .leftLeaf => 32 | _ => 0
+
+def FieldSite.load (j : Nat) : Instr := .LHU .x31 .x21 (BitVec.ofNat 12 (2*j))
+def FieldSite.store (site : FieldSite) (j : Nat) : Instr :=
+  .SH site.dest .x31 (BitVec.ofNat 12 (site.offset+2*j))
+
+theorem field_fetch_load (site : FieldSite) (j : Nat) (bounded : j<site.count) (state : MachineState)
+    (pc : state.pc=BitVec.ofNat 64 (4096+4*(site.start+2*j))) :
+    fetch packedImage state=some (.base (FieldSite.load j)) := by
+  refine cap_image_fetch packedImage state _ _ (by cases site <;> simp [FieldSite.start,FieldSite.count] at bounded ⊢ <;> omega) pc ?_
+  cases site <;> simp only [FieldSite.count] at bounded <;> interval_cases j <;> rfl
+
+theorem field_fetch_store (site : FieldSite) (j : Nat) (bounded : j<site.count) (state : MachineState)
+    (pc : state.pc=BitVec.ofNat 64 (4096+4*(site.start+2*j+1))) :
+    fetch packedImage state=some (.base (site.store j)) := by
+  refine cap_image_fetch packedImage state _ _ (by cases site <;> simp [FieldSite.start,FieldSite.count] at bounded ⊢ <;> omega) pc ?_
+  cases site <;> simp only [FieldSite.count] at bounded <;> interval_cases j <;> rfl
+
+inductive ProjectSite where | lower | cap
+def ProjectSite.start : ProjectSite → Nat | .lower => 234 | .cap => 339
+def ProjectSite.dest : ProjectSite → Reg | .lower => .x23 | .cap => .x12
+
+theorem project_fetch (site : ProjectSite) (s : MachineState)
+    (here : s.pc=BitVec.ofNat 64 (4096+4*site.start)) :
+    fetch packedImage s=some (.base .ECALL) := by
+  refine cap_image_fetch _ _ _ _ (by cases site <;> decide) here ?_
+  cases site <;> rfl
+
+theorem project_fetch_mask (site : ProjectSite) (s : MachineState)
+    (here : s.pc=BitVec.ofNat 64 (4096+4*(site.start+1))) :
+    fetch packedImage s=some (.base (.SH site.dest .x0 30)) := by
+  refine cap_image_fetch _ _ _ _ (by cases site <;> decide) here ?_
+  cases site <;> rfl
+
+end TwoPermutationPrototype.Packed.Checker

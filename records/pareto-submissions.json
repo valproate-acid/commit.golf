@@ -1,0 +1,93 @@
+{
+  "retrievedAt": "2026-11-19T05:11:35.118738+00:00",
+  "sourceCommand": "yukon submissions eigenlabs/commit-golf/pareto --json",
+  "benchmark": {
+    "id": "64c0960b-a466-4bde-99d1-d084728fb2da",
+    "name": "eigenlabs/commit-golf/pareto",
+    "trackName": "pareto",
+    "mode": "pareto",
+    "sourceUrl": "https://github.com/Layr-Labs/commit.golf",
+    "sourceBranch": "master",
+    "sourceRef": "0585bfb7ab74cad0be5d213dcdb20b433dffebb2",
+    "objectives": [
+      {
+        "name": "proverCycles",
+        "direction": "-"
+      },
+      {
+        "name": "proofBytes",
+        "direction": "-"
+      }
+    ]
+  },
+  "submissions": [
+    {
+      "id": "6470460d-8c44-485c-b58d-d1d48eae517b",
+      "solverUsername": "valproate-acid",
+      "status": "accepted",
+      "createdAt": "2026-11-19T04:15:27.180Z",
+      "updatedAt": "2026-11-19T04:45:19.707Z",
+      "officialScore": 477157126,
+      "officialMetrics": {
+        "verified": true,
+        "proofBytes": 182272,
+        "commitCycles": 477082487,
+        "proverCycles": 477157126,
+        "openingCycles": 74639,
+        "artifactDigest": "72839f872644761a32ee18359cfd8138c067983fd8b9cbe3e32735a89316e8dd",
+        "contractCommit": "54cd3202df8410cfee713eab785d284d18204b36"
+      },
+      "judgment": {
+        "valid": true,
+        "scores": [
+          477157126,
+          182272
+        ]
+      },
+      "evaluation": {
+        "id": "7ac2709e-85e1-436c-a3ce-c2737b81e5fd",
+        "human": null,
+        "scores": {
+          "values": [
+            477157126,
+            182272
+          ],
+          "evidence": {
+            "jobId": "0d0f5a64-c941-48a5-a5f2-01c20053a112",
+            "resultId": "b01e13d4-e25b-412a-9100-c216fc6d39e3",
+            "commitSha": "54cd3202df8410cfee713eab785d284d18204b36",
+            "sourceRef": "0585bfb7ab74cad0be5d213dcdb20b433dffebb2",
+            "evaluatedAt": "2026-11-19T04:45:16.232527+00:00",
+            "evaluatorId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a",
+            "policyVersionId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a"
+          }
+        },
+        "validity": {
+          "valid": true,
+          "reason": null,
+          "evidence": {
+            "jobId": "0d0f5a64-c941-48a5-a5f2-01c20053a112",
+            "resultId": "b01e13d4-e25b-412a-9100-c216fc6d39e3",
+            "commitSha": "54cd3202df8410cfee713eab785d284d18204b36",
+            "sourceRef": "0585bfb7ab74cad0be5d213dcdb20b433dffebb2",
+            "evaluatedAt": "2026-11-19T04:45:16.232527+00:00",
+            "evaluatorId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a",
+            "policyVersionId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a"
+          }
+        },
+        "publishedAt": "2026-11-19T04:45:19.575+00:00",
+        "candidateKey": "digest:34daf1881588391ddcb21e3a2ef60dd669f8f8db34953ae3118cdc083772c1d1",
+        "evaluationId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a",
+        "previousHuman": null,
+        "validityVersionId": "320c1ccb-a92d-4e52-8765-1cbfdcc4280a"
+      },
+      "evaluatedCommitSha": "54cd3202df8410cfee713eab785d284d18204b36",
+      "evaluationSourceRef": "0585bfb7ab74cad0be5d213dcdb20b433dffebb2",
+      "submissionCommitSha": "54cd3202df8410cfee713eab785d284d18204b36",
+      "promotionStatus": null,
+      "promotionReason": null,
+      "promotedSourceRef": null,
+      "promotionFinishedAt": null
+    }
+  ]
+}

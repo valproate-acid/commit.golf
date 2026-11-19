@@ -1,3 +1,88 @@
+# Commit Golf — valproate-acid의 Yukon 제출 기록
+
+[Layr-Labs/commit.golf](https://github.com/Layr-Labs/commit.golf)의 포크입니다.
+`my-challenge/commit-golf`에서 개발한 현재 Pareto 후보와 실제 Yukon CLI 제출 기록을 보관합니다.
+아래 결과는 2026-11-19에 Yukon CLI `v2026.11.18-4`로 조회했습니다.
+
+## 제출 결과
+
+| 항목 | 공식 기록 |
+|---|---|
+| 챌린지 / 트랙 | `eigenlabs/commit-golf/pareto` |
+| 제출자 | `valproate-acid` |
+| 제출 ID | `6470460d-8c44-485c-b58d-d1d48eae517b` |
+| 상태 | **accepted**, validity `true`, metrics `verified: true` |
+| 제출 시각 (KST) | 2026-11-19 13:15:27 |
+| 평가 시각 (KST) | 2026-11-19 13:45:16 |
+| Commit cycles | 477,082,487 |
+| Opening cycles | 74,639 |
+| Total prover cycles | **477,157,126** |
+| Opening proof bytes | **182,272** |
+| 모델 / 하네스 | GPT 6.1 Sol / Codex |
+| 평가 커밋 | [`54cd3202df8410cfee713eab785d284d18204b36`](https://github.com/Layr-Labs/commit.golf/commit/54cd3202df8410cfee713eab785d284d18204b36) |
+| 기준 계약 커밋 | `0585bfb7ab74cad0be5d213dcdb20b433dffebb2` |
+
+Pareto 좌표는 `[477157126, 182272]`입니다. 조회 응답의 `promotionStatus`와
+`promotedSourceRef`는 모두 `null`이므로 자동 승격 완료나 현재 순위는 주장하지 않습니다.
+Product 트랙의 본인 제출 내역은 조회 시점에 비어 있었습니다.
+
+## 변경 내용과 출처
+
+직접 재사용한 선행 제출은 parithosh의 `e169c3c4-7f1f-481e-ad1d-618eef75e320`
+(소스 커밋 `8bf41aad6b5570b8346fa8c1584bb1e50c0ff7a2`)입니다.
+Penta tree, NonceChain salts, commit/check 이미지와 보안 증명 계보를 이어받았습니다.
+이 후보는 opener의 proof 시작 포인터 `x15`를 유지하여 불필요한 초기 복사 명령을 제거합니다.
+증명 크기는 유지하면서 opening 및 total prover cycles를 각각 **1 cycle** 줄였습니다.
+
+구현 설명은 [후보 README](submission-pareto/README.md), 세부 실험·실패 기록·출처 및
+제출 당시의 검증 진행 상황은 [원본 공개 제출 노트](records/6470460d-8c44-485c-b58d-d1d48eae517b.md)에 있습니다.
+제출 노트는 제출 시점 그대로 보존했으므로 일부 문장에는 평가가 아직 진행 중이라고 적혀 있습니다.
+이후 확인된 최종 상태는 위 표와 [공식 결과 스냅샷](records/pareto-submissions.json)을 참고하세요.
+[Product 조회 기록](records/product-submissions.json)도 함께 보관합니다.
+
+## Yukon CLI로 기록 조회
+
+```sh
+yukon benchmark show eigenlabs/commit-golf/pareto --json
+yukon submissions eigenlabs/commit-golf/pareto --json
+yukon submission-note 6470460d-8c44-485c-b58d-d1d48eae517b
+yukon submissions eigenlabs/commit-golf/product --json
+```
+
+GitHub 소유자 이름은 `Layr-Labs`, Yukon setter 이름은 `eigenlabs`입니다.
+공개 JSON 스냅샷은 CLI 응답에서 결과에 필요한 필드를 추린 것으로, 인증 정보나 로컬 경로를 포함하지 않습니다.
+기록 정리를 위해 새 Yukon 제출을 만들지는 않았습니다.
+
+## 재현 및 검증 범위
+
+포크 준비 과정에서 다음 정적 artifact/policy 검사를 다시 실행했습니다.
+
+```sh
+python3 verifier/check_submission.py submission-pareto
+```
+
+결과는 `ok: true`, 오류 0개, 파일 619개, 9,150,157 bytes였습니다.
+Artifact digest는 공식 평가의 값과 동일합니다.
+
+```text
+72839f872644761a32ee18359cfd8138c067983fd8b9cbe3e32735a89316e8dd
+```
+
+이 검사는 전체 Lean 인증 검증을 대체하지 않습니다. 위 accepted 결과는 Yukon의 기존 공식 Linux 평가 기록입니다.
+이번 저장소 정리에서는 전체 Lean 빌드 및 Linux 평가를 다시 실행하지 않았습니다.
+지원되는 Linux에서 전체 검증을 재현하려면 원본 계약의 명령을 사용합니다.
+
+```sh
+bash scripts/setup.sh
+python3 scripts/run.py --track pareto
+```
+
+후속 제출 시에는 실제 모델·하네스, 공개 노트 및 재사용한 제출의 dependency 선언을 준비해야 합니다.
+
+---
+
+## 원본 프로젝트 README
+
 # commit.golf
 
 Design a hiding vector commitment scheme using two independent ideal primitives:

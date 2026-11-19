@@ -1,37 +1,29 @@
-import CommitGolfCandidate.Properties
-import CommitGolfCandidate.Binding
-import CommitGolfCandidate.Execution
-import CommitGolfCandidate.OpeningInput
-import CommitGolfCandidate.CheckInput
-import CommitGolfCandidate.Budgets
-import CommitGolfCandidate.CheckAcceptance
-import CommitGolfCandidate.Completeness
-import CommitGolfCandidate.BindingSecurity
-import CommitGolfCandidate.HidingSecurity
-import CommitGolf.Artifact
-import CommitGolfCandidate.LeafResourceBridge
-import CommitGolfCandidate.ResourceTests
+import CommitGolfCandidate.QuadArtifactSubmission
+import CommitGolfCandidate.PentaNonceAssembly
+import CommitGolfCandidate.QuadCheckerComplete
+import CommitGolfCandidate.QuadNonceCommitTranscript
 
-/-! Certified initial machine implementation. Every requirement below is proved
-for these same RISC-V images, including adaptive binding and commitment-and-opening
-hiding. The comparator replays this theorem against the fixed challenge statement. -/
 namespace CommitGolf.Challenge
+open TwoPermutationPrototype
+open CommitGolf CommitGolf.Riscv OracleComp TwoPermutationPrototype.Sampling
 
-def submission : CommitGolf.Submission := CommitGolfCandidate.submission
+set_option maxRecDepth 65536
 
-set_option maxRecDepth 100000 in
-theorem submission_matches_artifact : submission = CommitGolf.Artifact.submission := by
-  rfl
+def submission : CommitGolf.Submission := CommitGolf.Artifact.submission
 
-theorem certificate : CommitGolf.Certificate submission 102400 3959423012 48670 where
-  admission := CommitGolfCandidate.submission_admission
-  machineSuccess := CommitGolfCandidate.submission_machine_success
-  termination := CommitGolfCandidate.submission_termination
-  completeness := CommitGolfCandidate.submission_completeness
-  honestBudgets := CommitGolfCandidate.submission_honest_budgets
-  proofSize := CommitGolfCandidate.submission_proof_size
-  proverCycles := CommitGolfCandidate.submission_prover_cycles
-  binding := CommitGolfCandidate.submission_binding
-  hidingProperty := CommitGolfCandidate.submission_hiding
+theorem submission_matches_artifact : submission = CommitGolf.Artifact.submission := rfl
+
+theorem checker_facts : QuadCertificate.CheckerFacts submission := by
+  rw [show submission = _ from QuadCertificate.artifact_is_quad]
+  exact Quad.Checker.checker_facts _ rfl rfl rfl rfl
+
+theorem certificate : CommitGolf.Certificate submission 182272 477082487 74639 := by
+  have commit : PentaNonceCommitTranscript submission := by
+    rw [show submission = _ from QuadCertificate.artifact_is_quad]; exact Quad.Commit.verifiedNonceTranscript QuadOpening.openingImage Quad.Checker.quadCheckImage
+  have resources : ∀ (message : Message) (result : Execution), result ∈ support (submission.run .commit message) →
+      result.exit = .success ∧ result.cycles = 477082487 ∧ result.oracleCalls ≤ COMMIT_BUDGET := by
+    rw [show submission = _ from QuadCertificate.artifact_is_quad]; exact Quad.Commit.nonce_commit_resources QuadOpening.openingImage Quad.Checker.quadCheckImage
+  exact PentaNonceCertificate.penta_nonce_certificate submission QuadCertificate.quad_admitted
+    QuadCertificate.quad_opening_abi commit 477082487 resources checker_facts
 
 end CommitGolf.Challenge
